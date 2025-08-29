@@ -15,9 +15,20 @@
     <link rel="dns-prefetch" href="//analytics.google.com">
     <link rel="dns-prefetch" href="//www.google-analytics.com">
     
-    <!-- Typeform Embed SDK -->
-    <script src="//embed.typeform.com/next/embed.js"></script>
-    <link rel="stylesheet" href="//embed.typeform.com/next/css/popup.css" />
+    <!-- Typeform Embed SDK with async loading -->
+    <script>
+        (function() {
+            var qs, js, q, s, d = document, gi = d.getElementById, ce = d.createElement, gt = d.getElementsByTagName, id = "typef_orm_share", b = "https://embed.typeform.com/";
+            if (!gi.call(d, id)) {
+                js = ce.call(d, "script");
+                js.id = id;
+                js.src = b + "embed.js";
+                q = gt.call(d, "script")[0];
+                q.parentNode.insertBefore(js, q)
+            }
+        })();
+    </script>
+    <link rel="stylesheet" href="https://embed.typeform.com/next/css/popup.css" />
     
     <!-- SEO Meta Tags -->
     <meta name="description" content="Gratis EVP Assessment voor Nederlandse tech bedrijven. Ontdek hoe sterk jouw Employee Value Proposition is en waar je kunt verbeteren.">
@@ -415,7 +426,7 @@
             }
         }
 
-        // EVP Assessment Launch
+        // EVP Assessment Launch with fallback
         function startEVPAssessment() {
             trackEvent('evp_assessment_start', {
                 event_category: 'engagement',
@@ -425,21 +436,39 @@
             // Typeform ID for EVP Assessment
             const typeformId = '101673451';
             
-            window.tf.createPopup(typeformId, {
-                onReady: () => {
-                    trackEvent('typeform_ready');
-                },
-                onSubmit: () => {
-                    trackEvent('evp_assessment_complete', {
-                        event_category: 'conversion',
-                        event_label: 'EVP Assessment Completed'
-                    });
-                },
-                onClose: () => {
-                    trackEvent('typeform_closed');
-                }
-            }).open();
+            // Check if Typeform SDK is loaded
+            if (typeof window.tf !== 'undefined') {
+                // Use Typeform Embed SDK
+                window.tf.createPopup(typeformId, {
+                    onReady: () => {
+                        trackEvent('typeform_ready');
+                    },
+                    onSubmit: () => {
+                        trackEvent('evp_assessment_complete', {
+                            event_category: 'conversion',
+                            event_label: 'EVP Assessment Completed'
+                        });
+                    },
+                    onClose: () => {
+                        trackEvent('typeform_closed');
+                    }
+                }).open();
+            } else {
+                // Fallback: Direct link
+                console.log('Typeform SDK not loaded, using direct link');
+                window.open(`https://form.typeform.com/to/${typeformId}`, '_blank', 'width=800,height=600,scrollbars=yes,resizable=yes');
+                trackEvent('typeform_fallback_used');
+            }
         }
+
+        // Ensure Typeform SDK loads
+        window.addEventListener('load', () => {
+            if (typeof window.tf === 'undefined') {
+                console.warn('Typeform SDK failed to load, will use fallback');
+            } else {
+                console.log('Typeform SDK loaded successfully');
+            }
+        });
 
         // Scroll Tracking
         let scrollTracked = false;

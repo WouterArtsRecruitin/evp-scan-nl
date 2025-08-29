@@ -1,0 +1,25 @@
+{
+  "name": "evp-scan-nl",
+  "version": "1.0.0",
+  "description": "EVP Assessment Tool voor Nederlandse Tech Bedrijven",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx http-server . -p 8080",
+    "build": "echo 'No build process for static site'",
+    "deploy": "netlify deploy --prod",
+    "dev": "npx live-server ."
+  },
+  "keywords": [
+    "recruitment",
+    "evp",
+    "employee-value-proposition", 
+    "netherlands",
+    "tech-recruitment"
+  ],
+  "author": "Recruitin BV",
+  "license": "MIT",
+  "devDependencies": {
+    "http-server": "^14.1.1",
+    "live-server": "^1.2.2"
+  }
+}
